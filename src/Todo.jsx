@@ -1,4 +1,5 @@
-import React, { useReducer } from 'react'
+import React, { createContext, useReducer } from 'react'
+import TodoList from './TodoList';
 
 const initState=
 {
@@ -6,10 +7,10 @@ const initState=
   todos:[],
   
 }
-
+export const todoContext =createContext();
 function reducer(state,action)
 {
-  let newTodo,filteredTodo,newTo,sto;
+  let newTodo,filteredTodo,newTo;
   switch(action.type)
   
   {
@@ -26,16 +27,17 @@ function reducer(state,action)
     case 'toggleTodo':
       console.log(action,state)
       newTo= state.todos.map(t=> {
-        if(t.id==action.payload.id)
+        if(t.id==action.payload)
         {
-            return {...t, status: true}  
+            return {...t, status: !t.status}   
         }
         else
         {
           return {...t}
         }
       })
-        console.log("newTo",newTo)
+        // console.log("newTo",newTo)
+        console.log(state)
       return {todos:newTo}
       
     default:
@@ -44,7 +46,7 @@ function reducer(state,action)
 
 }
 
-const Todo = () => {
+export const TodoContextProvider = ({children}) => {
   const inputRef = React.useRef()
     const [state, dispatch]=useReducer(reducer,initState)
     const {query,todos}=state;
@@ -62,7 +64,7 @@ const Todo = () => {
           inputRef.current.focus()
         }}>Add</button>
 
-        {
+        {/* {
           todos.map(todo=> (
             
             <div key={todo.id}><input checked={todo.status}  onChange={(e)=> {
@@ -74,16 +76,21 @@ const Todo = () => {
               dispatch({type:'delTodo', payload: todo.id})
               dispatch({type:"getQuery",payload:""})
             }}>Del</button>
-             </div>
-             
-             
+             </div> 
             
           )
             
           )
-        }
+        } */}
+
+
+
+        <todoContext.Provider value={{todos,dispatch,state}} >
+        <TodoList/>
+        </todoContext.Provider>
+
+
     </div>
   )
 }
 
-export default Todo
