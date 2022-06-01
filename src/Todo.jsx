@@ -3,24 +3,41 @@ import React, { useReducer } from 'react'
 const initState=
 {
   query:"",
-  todos:[]
+  todos:[],
+  
 }
 
 function reducer(state,action)
 {
-  let newTodo,filteredTodo;
+  let newTodo,filteredTodo,newTo,sto;
   switch(action.type)
+  
   {
     case 'getQuery':
       // console.log(state,action)
       return {query:action.payload,todos:state.todos};
     case 'addTodo':
-      newTodo=[...state.todos,{id: Date.now(), list: action.payload}];
+      newTodo=[...state.todos,{id: Date.now(), list: action.payload,status: false}];
       // console.log(action)
       return {todos:newTodo};
     case 'delTodo':
       filteredTodo=state.todos.filter(to=> to.id != action.payload)
       return {todos:filteredTodo}
+    case 'toggleTodo':
+      console.log(action,state)
+      newTo= state.todos.map(t=> {
+        if(t.id==action.payload.id)
+        {
+            return {...t, status: true}  
+        }
+        else
+        {
+          return {...t}
+        }
+      })
+        console.log("newTo",newTo)
+      return {todos:newTo}
+      
     default:
       return state;
   }
@@ -48,9 +65,14 @@ const Todo = () => {
         {
           todos.map(todo=> (
             
-            <div key={todo.id}><input value={true} onChange={(e)=> console.log(e.target.checked)} type="checkbox"/> {todo.list} 
+            <div key={todo.id}><input checked={todo.status}  onChange={(e)=> {
+              dispatch({type:"toggleTodo", payload:todo.id})
+              dispatch({type:"getQuery",payload:""})
+              // console.log(todo.status,e.target.checked)
+            }} type="checkbox"/> {todo.list} 
             <button onClick={()=> {
               dispatch({type:'delTodo', payload: todo.id})
+              dispatch({type:"getQuery",payload:""})
             }}>Del</button>
              </div>
              
